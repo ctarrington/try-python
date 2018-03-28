@@ -1,3 +1,4 @@
 from greet import greet
 
-assert greet('Fred') == 'Hi there, Fred'
+def test_greet():
+    assert greet('Fred') == 'Hi there, Fred'

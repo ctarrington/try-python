@@ -2,7 +2,7 @@ import pandas as pd
 import numpy as np
 
 from sklearn import svm
-from sklearn.model_selection import GridSearchCV
+from sklearn.model_selection import GridSearchCV, StratifiedKFold
 from sklearn.metrics import accuracy_score, classification_report
 
 base_path = '~/github/try-python/kaggle/titanic'
@@ -44,21 +44,25 @@ def condition_data(td):
     return td
     
 all_train = condition_data(all_train)
-train, validation = split_random_rows(all_train, 0.8)
+train, validation = split_random_rows(all_train, 0.7)
 
 train_x, train_y = split_features_labels(all_train)
 validation_x, validation_y = split_features_labels(validation)
 
-tuned_parameters = [{'kernel': ['rbf'], 'gamma': [1e-2, 1e-3, 1e-4, 1e-5],
-                     'C': [1e5, 1e6, 1e7]}]
+c_ints = [9.07e5, 9.08e5, 9.09e5, 9.1e5, 9.11e5, 9.12e5, 9.13e5]
+
+tuned_parameters = [{'kernel': ['rbf'], 'gamma': [1e-2, 1e-3, 1e-4],
+                     'C': c_ints, 'degree': [2,3,4]}]
 
 scores = ['precision', 'recall']
+
+kfolds = StratifiedKFold(n_splits=5, shuffle=True)
 
 for score in scores:
     print("# Tuning hyper-parameters for %s" % score)
     print()
 
-    clf = GridSearchCV(svm.SVC(), tuned_parameters, cv=3, n_jobs=-1, scoring='%s_macro' % score)
+    clf = GridSearchCV(svm.SVC(), tuned_parameters, cv=kfolds, n_jobs=-1, scoring='%s_macro' % score)
     clf.fit(train_x, train_y)
 
     print("Best parameters set found on development set:")
@@ -76,7 +80,7 @@ for score in scores:
     print()         
 
 
-
+    print('trained via k-folds against hold out')
     predicted_y = clf.predict(validation_x)
     print(classification_report(validation_y, predicted_y))
 
@@ -88,6 +92,6 @@ default_clf.fit(train_x, train_y)
 print(classification_report(validation_y, default_clf.predict(validation_x)))
 
 print('tuned, trained on whole train against hold out')
-tuned_clf = svm.SVC(C=1000000, gamma=0.001)
+tuned_clf = svm.SVC(C=9.1e5, gamma=1e-3)
 tuned_clf.fit(train_x, train_y)
 print(classification_report(validation_y, tuned_clf.predict(validation_x)))
