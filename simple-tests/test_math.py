@@ -52,3 +52,26 @@ def test_precision():
     hundred_hundredths_np_array = np.full((1, 100), 0.01)
     assert hundred_hundredths_np_array.sum() != 1
     assert math.isclose(hundred_hundredths_np_array.sum(), 1)
+
+
+def test_iteration():
+    evens = range(0, 12, 2)
+    assert evens[0] == 0
+    assert evens[5] == 10
+
+    total = 0
+    for num in evens:
+        total += num
+    assert total == 30
+
+    one_to_ten = range(1, 11)
+
+    # map returns sequence
+    tenths = map(lambda x: x / 10, one_to_ten)
+    assert next(tenths) == 0.1
+    assert next(tenths) == 0.2
+
+    # comprehension returns list
+    hundreths = [x / 100 for x in one_to_ten]
+    assert hundreths[0] == 0.01
+    assert hundreths[1] == 0.02
