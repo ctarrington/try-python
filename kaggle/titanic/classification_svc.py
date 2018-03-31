@@ -30,9 +30,9 @@ train, validation = split_random_rows(all_train, 0.8)
 train_x, train_y = split_features_labels(all_train)
 validation_x, validation_y = split_features_labels(validation)
 
-c_ints = [9.07e5, 9.08e5, 9.09e5, 9.1e5, 9.11e5]
+c_ints = [9.04e5, 9.05e5, 9.06e5, 9.07e5, 9.08e5]
 
-tuned_parameters = [{'kernel': ['rbf'], 'gamma': [1e-2, 1e-3],
+tuned_parameters = [{'kernel': ['rbf'], 'gamma': [1e-3, 1e-4, 1e-5],
                      'C': c_ints, 'degree': [2]}]
 
 kfolds = StratifiedKFold(n_splits=5, shuffle=True)
