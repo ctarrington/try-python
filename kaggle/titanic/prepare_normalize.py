@@ -1,7 +1,29 @@
+import math
+import random
 import pandas as pd
 import numpy as np
 
 from extract_title import add_title
+
+
+def fill_na_preserve_distribution(data, key):
+    mu = data[key].mean()
+    sigma = data[key].std()
+    na_count = data[key].isnull().sum()
+    replacements = np.random.normal(mu, sigma, na_count)
+
+    filled_in = data[key].apply(
+        lambda x: random.choice(replacements) if math.isnan(x) else x)
+    data[key] = filled_in
+
+
+def split_random_rows(data, ratio):
+    indexes = np.random.rand(len(data)) < ratio
+
+    first = data[indexes]
+    second = data[~indexes]
+
+    return first, second
 
 
 def split_features_labels(data):
@@ -11,9 +33,44 @@ def split_features_labels(data):
     return data_x, data_y
 
 
-def condition_data(data, mean_age, max_age):
-    data['Age'].fillna(mean_age, inplace=True)
-    data['Age'] = data['Age'] / max_age
+def calculate_youth(row):
+    value = 0
+
+    if (math.isnan(row.Age) and (row.IsMiss or row.IsMaster)):
+        value = 1
+
+    elif (row.Age > 3 and row.Age < 18 and row.Sex == 'female'):
+        value = 1
+
+    elif (row.Age > 4 and row.Age < 16 and row.Sex == 'male'):
+        value = 1
+
+    return value
+
+
+def calculate_baby(row):
+    value = 0
+
+    if (row.Age <= 3 and row.Sex == 'female'):
+        value = 1
+
+    elif (row.Age <= 4 and row.Sex == 'male'):
+        value = 1
+
+    return value
+
+
+def calculate_adult(row):
+    value = 1
+
+    if (row.IsBaby or row.IsYouth or row.IsOld):
+        value = 0
+
+    return value
+
+
+def condition_data(data, max_age):
+
     data['FamilyCount'] = data['SibSp'] + data['Parch'] + 1
     data['SingleFamilySize'] = np.where(data['FamilyCount'] == 1, 1, 0)
     data['SmallFamilySize'] = np.where(
@@ -31,6 +88,14 @@ def condition_data(data, mean_age, max_age):
     data['IsMaster'] = np.where(data['Title'] == 'Master', 1, 0)
     data['IsAuthority'] = np.where(data['Title'] == 'Authority', 1, 0)
     data['IsRoyal'] = np.where(data['Title'] == 'Royal', 1, 0)
+
+    data['IsOld'] = np.where(data['Age'] > 55, 1, 0)
+    data['IsYouth'] = data.apply(calculate_youth, axis=1)
+    data['IsBaby'] = data.apply(calculate_baby, axis=1)
+    data['IsAdult'] = data.apply(calculate_adult, axis=1)
+
+    fill_na_preserve_distribution(data, 'Age')
+    data['Age'] = data['Age'] / max_age
 
     data.drop(['Sex', 'PassengerId', 'Ticket', 'Fare', 'Name', 'Embarked',
                'FamilyCount', 'Cabin', 'Pclass', 'SibSp', 'Parch', 'Title'],

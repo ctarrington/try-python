@@ -1,6 +1,8 @@
 import re
 import pandas as pd
 
+from prepare_normalize import condition_data
+
 
 def extract_title(raw):
     match = re.search('(.*, )(.*?)\\.', raw)
@@ -25,3 +27,17 @@ has_cabin = all_data['Cabin'].notnull()
 
 third_with_cabin = all_data[third_class & has_cabin]
 print(third_with_cabin)
+
+age_max = all_data['Age'].max()
+age_avg = all_data['Age'].mean()
+age_std = all_data['Age'].std()
+print('age: ', age_avg, age_std)
+print('na count', all_data['Age'].isnull().sum())
+
+condition_data(all_data, age_max)
+age_avg = all_data['Age'].mean()
+age_std = all_data['Age'].std()
+print('age: ', age_avg, age_std)
+print('na count', all_data['Age'].isnull().sum())
+
+print(all_data)
