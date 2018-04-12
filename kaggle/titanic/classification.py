@@ -32,7 +32,7 @@ svc_scenario = {'name': 'svc',
                 'default_model': svm.SVC(),
                 'tuned_parameters': [{'kernel': ['rbf'],
                                       'gamma': [1e-2, 1e-3, 1e-4, 1e-5],
-                                      'C': [8e4, 9e4, 1e5, 2e5, 3e5],
+                                      'C': [7e4, 8e4, 9e4, 1e5, 2e5, 3e5, 4e5],
                                       'degree': [2]}]}
 
 forest_scenario = {'name': 'forest',
@@ -118,9 +118,6 @@ for scenario in scenarios:
 
 def tally_votes(row):
     average = sum(row) / len(row)
-    if (average > 0 and average < 1):
-        print('mismatched row', row)
-
     return 1 if average > 0.5 else 0
 
 
@@ -128,7 +125,6 @@ print('tallying votes')
 without_passenger_id = predictions.drop(['PassengerId'], axis=1, inplace=False)
 without_passenger_id['Survived'] = without_passenger_id.apply(
     tally_votes, axis=1)
-print(without_passenger_id)
 predictions['Survived'] = without_passenger_id['Survived']
 predictions = predictions[['PassengerId', 'Survived']]
 predictions.to_csv(BASE_PATH + '/predictions-votes.csv', index=False)
