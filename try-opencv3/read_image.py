@@ -2,7 +2,7 @@ import numpy as np
 import cv2
 from matplotlib import pyplot as plt
 
-raw = cv2.imread('../../OpenCV-3-Computer-Vision-with-Python-Cookbook/data/Lena.png')
+raw = cv2.imread('./mango.jpg')
 b,g,r = cv2.split(raw)
 corrected = cv2.merge([r,g,b])
 lb = np.array(b*0.2, dtype='uint8')
