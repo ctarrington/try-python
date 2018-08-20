@@ -1,0 +1,7 @@
+[
+  {"id":1, "words": ["blue", "white"], "label": "sky"},
+  {"id":2, "words": ["blue", "green", "grey"], "label": "ocean"},
+  {"id":3, "words": ["green", "grey"], "label": "ocean"},
+  {"id":4, "words": ["green", "brown"], "label": "land"},
+  {"id":5, "words": ["grey", "white"], "label": "sky"}
+]
