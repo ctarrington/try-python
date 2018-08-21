@@ -6,13 +6,14 @@ from pandas.io.json import json_normalize
 
 from sklearn.preprocessing import LabelEncoder
 
-def convert_row_to_text(row, key):
+
+def _convert_row_to_text(row, key):
     text = " ".join(row[key])
     return text
 
 
 def _convert_column_to_text(data, key):
-    data[key] = data.apply(convert_row_to_text, axis=1, key=key)
+    data[key] = data.apply(_convert_row_to_text, axis=1, key=key)
 
 
 def read_and_normalize(file):
@@ -22,15 +23,15 @@ def read_and_normalize(file):
         return normalized
 
 
-def prepare(vectorizer, labeled_data, unlabeled_data, key):
-    _convert_column_to_text(labeled_data, key)
-    _convert_column_to_text(unlabeled_data, key)
+def prepare(vectorizer, labeled_data, unlabeled_data, text_key, label_key):
+    _convert_column_to_text(labeled_data, text_key)
+    _convert_column_to_text(unlabeled_data, text_key)
 
-    labeled_occurances = vectorizer.fit_transform(labeled_data['words'])
-    unlabeled_occurances = vectorizer.transform(unlabeled_data['words'])
+    labeled_occurances = vectorizer.fit_transform(labeled_data[text_key])
+    unlabeled_occurances = vectorizer.transform(unlabeled_data[text_key])
 
     encoder = LabelEncoder()
-    labels = encoder.fit_transform(labeled_data['label'])
+    labels = encoder.fit_transform(labeled_data[label_key])
 
-    return labeled_occurances, unlabeled_occurances, labels
+    return labeled_occurances, unlabeled_occurances, labels, encoder
 
