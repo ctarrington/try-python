@@ -45,7 +45,7 @@ RUN ~/anaconda/bin/pip install --upgrade -q keras
 RUN ~/anaconda/bin/pip install --upgrade -q tflearn
 
 USER root
-RUN apt-get install -y libsm6 libxrender1 libfontconfig1
+RUN apt-get install -y libsm6 libxrender1 libfontconfig1 mlocate libxtst6 libxi-dev
 
 USER developer
 WORKDIR /home/developer
