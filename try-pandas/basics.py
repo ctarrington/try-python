@@ -12,3 +12,10 @@ print(slice.head())
 just60s = df[(df.year >= 1960) & (df.year <= 1969)]
 print(just60s.iloc[0:10, [0,2]])
 
+print(df.year.min())
+print(df.describe())
+
+print(df['pop'].max())
+
+print(df[df['pop'] == df['pop'].max()])
+
