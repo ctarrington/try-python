@@ -1,5 +1,5 @@
 from column import Column
-from generator import generate_schema
+from generator import generate_schema, generate_xml
 
 file = open('simple.csv', 'r')
 
@@ -12,5 +12,14 @@ for line in lines:
     for index, token in enumerate(tokens):
         columns[index].add_data(token)
 
-schema = generate_schema('sei', columns)
-print(schema)
+wrapper = 'people'
+entry = 'person'
+schema = generate_schema(wrapper, entry, columns)
+schema_file = open('output/'+wrapper+'.xsd', 'w')
+schema_file.write(schema)
+schema_file.close()
+
+xml = generate_xml(wrapper, entry, columns)
+xml_file = open('output/'+wrapper+'.xml', 'w')
+xml_file.write(xml)
+xml_file.close()
